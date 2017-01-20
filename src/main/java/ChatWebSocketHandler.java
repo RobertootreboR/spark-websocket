@@ -22,7 +22,7 @@ public class ChatWebSocketHandler {
 
     @OnWebSocketMessage
     public void onMessage(Session user, String message) {
-        Chat.broadcastMessage(sender = Chat.userUsernameMap.get(user), msg = message);
+        Chat.processMessage(sender = Chat.userUsernameMap.get(user), msg = message);
     }
 
 }

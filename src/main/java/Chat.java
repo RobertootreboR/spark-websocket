@@ -8,7 +8,7 @@ import static j2html.TagCreator.*;
 import static spark.Spark.*;
 
 public class Chat {
-
+    static WeatherForecast forecast=new WeatherForecast();
     // this map is shared between sessions and threads, so it needs to be thread-safe (http://stackoverflow.com/a/2688817)
     static Map<Session, String> userUsernameMap = new ConcurrentHashMap<>();
     static int nextUserNumber = 1; //Assign to username for next connecting user
@@ -18,6 +18,16 @@ public class Chat {
         staticFiles.expireTime(600);
         webSocket("/chat", ChatWebSocketHandler.class);
         init();
+    }
+
+    public static void processMessage(String sender, String message){
+        broadcastMessage(sender,message);
+        if(message.equals("what's the weather in Krakow?"))
+            broadcastMessage("Server",forecast.update());
+        else if(message.equals("What's the time?"))
+            broadcastMessage("Server",new SimpleDateFormat("HH:mm:ss").format(new Date()));
+        else if(message.equals("What's the day today?"))
+            broadcastMessage("Server", new Date().toString().split(" ")[0]);
     }
 
     //Sends a message from one user to all users, along with a list of current usernames
