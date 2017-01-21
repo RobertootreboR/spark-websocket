@@ -5,12 +5,8 @@ import org.eclipse.jetty.websocket.api.annotations.*;
 public class ChatWebSocketHandler {
 
     private String sender, msg;
-
     @OnWebSocketConnect
     public void onConnect(Session user) throws Exception {
-        String username = "User" + Chat.nextUserNumber++;
-        Chat.userUsernameMap.put(user, username);
-        Chat.broadcastMessage(sender = "Server", msg = (username + " joined the chat"));
     }
 
     @OnWebSocketClose
@@ -22,7 +18,12 @@ public class ChatWebSocketHandler {
 
     @OnWebSocketMessage
     public void onMessage(Session user, String message) {
-        Chat.processMessage(sender = Chat.userUsernameMap.get(user), msg = message);
+        if(message.startsWith("#username#*")){
+            String username = message.substring(message.indexOf('*') + 1);
+           Chat.userUsernameMap.put(user, username);
+            Chat.broadcastMessage(sender = "Server", msg = (username + " joined the chat"));
+        }
+        else Chat.processMessage(sender = Chat.userUsernameMap.get(user), msg = message);
     }
 
 }
