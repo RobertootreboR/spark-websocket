@@ -7,19 +7,21 @@ webSocket.onopen = login();
 function login(){
     var username = getCookie("username");// getCookie("username");//= getCookie("username");
     if(username != ""){
-        alert("HELLO"+ username );
+        alert("HELLO "+ username );
         webSocket.send("#username#*" + username);
     }
-    else{
-        username = prompt("Type your username: ");
-        if (username == null || username == ""){
-            alert("You can't be without username");
-            login();
-            return;
-        }
-        setCookie("username", username);
-        webSocket.send("#username#*" + username);
+    else
+        setUsername();
+}
+function setUsername(){
+    var username = prompt("Type your username: ");
+    if (username == null || username == ""){
+        alert("You can't be without username");
+        setUsername();
+        return;
     }
+    setCookie("username", username);
+    webSocket.send("#username#*" + username);
 }
 //Send message if "Send" is clicked
 id("send").addEventListener("click", function () {
@@ -38,16 +40,50 @@ function sendMessage(message) {
         id("message").value = "";
     }
 }
+/*
+function handleMessage(msg) {
+
+    var data = JSON.parse(msg.data);
+    if(data.why == "taken_username"){
+        alert("nazwa juz zajeta");
+        setUsername();
+        return;
+    }
+
+    if(data.reason == "message")
+        insert("chat", data.userMessage);
+
+    id("channellist").innerHTML = "";
+
+    data.channellist.forEach(function (channel) {
+
+        var znacznik = document.createElement('button');
+        znacznik.onclick = function () {channelEnter(channel);}
+        var t = document.createTextNode(channel);
+        znacznik.appendChild(t);
+
+        var kontener = id("channellist");
+        kontener.appendChild(znacznik);
+    });
+
+}*/
 
 //Update the chat-panel, and the list of connected users
 function updateChat(msg) {
     var data = JSON.parse(msg.data);
-    insert("chat", data.userMessage);
+
+    if(data.reason == "duplicate_username"){
+        alert("this username is taken!");
+        setUsername();
+        return;
+    }
+    insert("chat", data.userMessage + "lalalala");
     id("userlist").innerHTML = "";
     data.userlist.forEach(function (user) {
         insert("userlist", "<li>" + user + "</li>");
     });
 }
+
 
 //Helper function for inserting HTML as the first child of an element
 function insert(targetId, message) {
