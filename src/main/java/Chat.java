@@ -4,6 +4,8 @@ import org.json.*;
 import java.text.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static j2html.TagCreator.*;
 import static spark.Spark.*;
@@ -11,12 +13,16 @@ import static spark.Spark.*;
 public class Chat {
     static WeatherForecast forecast = new WeatherForecast();
     // this map is shared between sessions and threads, so it needs to be thread-safe (http://stackoverflow.com/a/2688817)
+    static Map<String, String> userToChannel = new ConcurrentHashMap<>();
+    static List<String> channels = new CopyOnWriteArrayList<String>();
+    static AtomicInteger nextChannelNumber=new AtomicInteger(0);
     static Map<Session, String> userUsernameMap = new ConcurrentHashMap<>();
     static int nextUserNumber = 1; //Assign to username for next connecting user
 
     public static void main(String[] args) {
         staticFiles.location("/public"); //index.html is served at localhost:4567 (default port)
         staticFiles.expireTime(600);
+        channels.add("Default");
         webSocket("/chat", ChatWebSocketHandler.class);
         init();
     }
@@ -37,7 +43,7 @@ public class Chat {
             try {
                 session.getRemote().sendString(String.valueOf(new JSONObject()
                         .put("userMessage", createHtmlMessageFromSender(sender, message))
-                        .put("userlist", userUsernameMap.values())
+                        .put("channellist", channels)
                         .put("reason", reason)
                 ));
             } catch (Exception e) {

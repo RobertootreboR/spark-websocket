@@ -19,11 +19,21 @@ public class ChatWebSocketHandler {
     @OnWebSocketMessage
     public void onMessage(Session user, String message) {
         if(message.startsWith("#username#*")){
-            if(handle.uniqueUsername(message.substring(message.indexOf('*') + 1)))
+            if(handle.uniqueUsername(decode(message)))
                  handle.addUser(user,message);
             else handle.retryLogin(user);
+        }else
+        if(message.startsWith("#addChannel#*")){
+            if(handle.uniqueChannelName(decode(message)))
+                handle.addChannel(user,decode(message));
+            else handle.getChannelName(user);
+
         }
         else Chat.processMessage(sender = Chat.userUsernameMap.get(user), msg = message);
+    }
+
+    String decode(String message){
+        return message.substring(message.indexOf('*') + 1);
     }
 
 }

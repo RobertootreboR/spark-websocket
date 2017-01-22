@@ -27,6 +27,18 @@ function setUsername(){
 id("send").addEventListener("click", function () {
     sendMessage(id("message").value);
 });
+id("addChannel").addEventListener("click", function () {
+    addChannel();
+});
+function addChannel(){
+    var channelName = prompt("How do you want to name your Channel?");
+    if(channelName =="" || channelName ==null){
+        alert("You have to name your channel!");
+        addChannel();
+        return;
+    }
+    webSocket.send("#addChannel#*"+channelName);
+}
 
 //Send message if enter is pressed in the input field
 id("message").addEventListener("keypress", function (e) {
@@ -40,33 +52,6 @@ function sendMessage(message) {
         id("message").value = "";
     }
 }
-/*
-function handleMessage(msg) {
-
-    var data = JSON.parse(msg.data);
-    if(data.why == "taken_username"){
-        alert("nazwa juz zajeta");
-        setUsername();
-        return;
-    }
-
-    if(data.reason == "message")
-        insert("chat", data.userMessage);
-
-    id("channellist").innerHTML = "";
-
-    data.channellist.forEach(function (channel) {
-
-        var znacznik = document.createElement('button');
-        znacznik.onclick = function () {channelEnter(channel);}
-        var t = document.createTextNode(channel);
-        znacznik.appendChild(t);
-
-        var kontener = id("channellist");
-        kontener.appendChild(znacznik);
-    });
-
-}*/
 
 //Update the chat-panel, and the list of connected users
 function updateChat(msg) {
@@ -77,10 +62,26 @@ function updateChat(msg) {
         setUsername();
         return;
     }
-    insert("chat", data.userMessage + "lalalala");
-    id("userlist").innerHTML = "";
-    data.userlist.forEach(function (user) {
-        insert("userlist", "<li>" + user + "</li>");
+    if(data.reason == "duplicate_channelname"){
+        alert("this channelname is taken!");
+        addChannel();
+        //return;
+    }
+
+
+    if(data.reason=="message")
+        insert("chat", data.userMessage);
+
+    id("channellist").innerHTML = "";
+    data.channellist.forEach(function (channel) {
+
+        var znacznik = document.createElement('button');
+        znacznik.onclick = function () {channelEnter(channel);}
+        var t = document.createTextNode(channel);
+        znacznik.appendChild(t);
+
+        var kontener = id("channellist");
+        kontener.appendChild(znacznik);
     });
 }
 
@@ -94,15 +95,6 @@ function insert(targetId, message) {
 function id(id) {
     return document.getElementById(id);
 }
-
-function httpGet(theUrl)
-{
-    var xmlHttp = new XMLHttpRequest();
-    xmlHttp.open( "GET", theUrl, false ); // http://stackoverflow.com/questions/247483/http-get-request-in-javascript
-    xmlHttp.send( null );
-    return xmlHttp.responseText;
-}
-
 
 function getCookie(cname) {
     var name = cname + "=";
