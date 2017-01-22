@@ -69,8 +69,9 @@ function updateChat(msg) {
     }
 
 
-    if(data.reason=="message")
+    if(data.reason=="message") {
         insert("chat", data.userMessage);
+    }
 
     id("channellist").innerHTML = "";
     data.channellist.forEach(function (channel) {

@@ -21,7 +21,7 @@ public class MessageHandler {
     }
 
     public void retryLogin(Session user) {
-        try{ user.getRemote().sendString(String.valueOf(new JSONObject().put("reason", "duplicate_username") ) );
+        try{ user.getRemote().sendString(String.valueOf(new JSONObject().put("reason", "duplicate_username").put("channellist", Chat.channels) ) );
         }catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -42,9 +42,21 @@ public class MessageHandler {
     }
 
     public void getChannelName(Session user) {
-        try{ user.getRemote().sendString(String.valueOf(new JSONObject().put("reason", "duplicate_channelname") ) );
+        try{ user.getRemote().sendString(String.valueOf(new JSONObject().put("reason", "duplicate_channelname")
+                                                                        .put("channellist", Chat.channels) ) );
         }catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+    public void refresh(){
+        Chat.userUsernameMap.keySet().stream().filter(Session::isOpen).forEach(session -> {
+            try {
+                session.getRemote().sendString(String.valueOf(new JSONObject()
+                        .put("channellist", Chat.channels)
+                ));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 }

@@ -24,9 +24,14 @@ public class ChatWebSocketHandler {
             else handle.retryLogin(user);
         }else
         if(message.startsWith("#addChannel#*")){
-            if(handle.uniqueChannelName(decode(message)))
+            if(handle.uniqueChannelName(decode(message))){
                 handle.addChannel(user,decode(message));
-            else handle.getChannelName(user);
+                handle.refresh();
+            }
+            else{
+                handle.getChannelName(user);
+                handle.refresh();
+            }
 
         }
         else Chat.processMessage(sender = Chat.userUsernameMap.get(user), msg = message);
