@@ -16,6 +16,7 @@ public class ChatWebSocketHandler {
     public void onConnect(Session user) throws Exception {
         if(channelHandler.uniqueChannelName("Default"))
             channelHandler.channels.add(new UserChannel("Default"));
+        channelHandler.refreshChannelList(userHandler.userUsernameMap);
     }
 
     @OnWebSocketClose
@@ -40,7 +41,8 @@ public class ChatWebSocketHandler {
                 channelHandler.refreshChannelList(userHandler.userUsernameMap);
             }
 
-        } else userHandler.processMessage(sender = userHandler.userUsernameMap.get(user).getName(), msg = message,channelHandler.getChannelNames());
+        } //else userHandler.processMessage(sender = userHandler.userUsernameMap.get(user).getName(), msg = message,channelHandler.getChannelNames());
+            else userHandler.userUsernameMap.get(user).getChannel().broadcastMessage(sender = userHandler.userUsernameMap.get(user).getName(), msg = message,"message",userHandler.userUsernameMap,channelHandler.getChannelNames());
     }
 
     String decode(String message) {

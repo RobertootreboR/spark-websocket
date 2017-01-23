@@ -1,21 +1,25 @@
 //Establish the WebSocket connection and set up event handlers
 var webSocket = new WebSocket("ws://" + location.hostname + ":" + location.port + "/chat/");
-webSocket.onmessage = function (msg) { updateChat(msg); };
-webSocket.onclose = function () { alert("WebSocket connection closed") };
+webSocket.onmessage = function (msg) {
+    updateChat(msg);
+};
+webSocket.onclose = function () {
+    alert("WebSocket connection closed")
+};
 webSocket.onopen = login();
 
-function login(){
+function login() {
     var username = getCookie("username");// getCookie("username");//= getCookie("username");
-    if(username != ""){
-        alert("HELLO "+ username );
+    if (username != "") {
+        alert("HELLO " + username);
         webSocket.send("#username#*" + username);
     }
     else
         setUsername();
 }
-function setUsername(){
+function setUsername() {
     var username = prompt("Type your username: ");
-    if (username == null || username == ""){
+    if (username == null || username == "") {
         alert("You can't be without username");
         setUsername();
         return;
@@ -30,19 +34,21 @@ id("send").addEventListener("click", function () {
 id("addChannel").addEventListener("click", function () {
     addChannel();
 });
-function addChannel(){
+function addChannel() {
     var channelName = prompt("How do you want to name your Channel?");
-    if(channelName =="" || channelName ==null){
+    if (channelName == "" || channelName == null) {
         alert("You have to name your channel!");
         addChannel();
         return;
     }
-    webSocket.send("#addChannel#*"+channelName);
+    webSocket.send("#addChannel#*" + channelName);
 }
 
 //Send message if enter is pressed in the input field
 id("message").addEventListener("keypress", function (e) {
-    if (e.keyCode === 13) { sendMessage(e.target.value); }
+    if (e.keyCode === 13) {
+        sendMessage(e.target.value);
+    }
 });
 
 //Send a message if it's not empty, then clear the input field
@@ -52,38 +58,44 @@ function sendMessage(message) {
         id("message").value = "";
     }
 }
+function joinChannel(channel){
+    webSocket.send("#joinChannel#*"+channel)
+}
 
 //Update the chat-panel, and the list of connected users
 function updateChat(msg) {
     var data = JSON.parse(msg.data);
 
-    if(data.reason == "duplicate_username"){
+    if (data.reason == "duplicate_username") {
         alert("this username is taken!");
         setUsername();
         return;
     }
-    if(data.reason == "duplicate_channelname"){
+    if (data.reason == "duplicate_channelname") {
         alert("this channelname is taken!");
         addChannel();
         //return;
     }
 
 
-    if(data.reason=="message") {
+    if (data.reason == "message") {
         insert("chat", data.userMessage);
     }
+        id("channellist").innerHTML = "";
+        data.channellist.forEach(function (channel) {
 
-    id("channellist").innerHTML = "";
-    data.channellist.forEach(function (channel) {
+            var znacznik = document.createElement('button');
+            znacznik.onclick = function () {
+                joinChannel(channel);
+            };
+            var t = document.createTextNode(channel);
+            znacznik.appendChild(t);
 
-        var znacznik = document.createElement('button');
-        znacznik.onclick = function () {channelEnter(channel);}
-        var t = document.createTextNode(channel);
-        znacznik.appendChild(t);
+            var kontener = id("channellist");
+            kontener.appendChild(znacznik);
+        });
 
-        var kontener = id("channellist");
-        kontener.appendChild(znacznik);
-    });
+
 }
 
 
@@ -101,7 +113,7 @@ function getCookie(cname) {
     var name = cname + "=";
     var decodedCookie = decodeURIComponent(document.cookie);
     var ca = decodedCookie.split(';');
-    for(var i = 0; i <ca.length; i++) {
+    for (var i = 0; i < ca.length; i++) {
         var c = ca[i];
         while (c.charAt(0) == ' ') {
             c = c.substring(1);

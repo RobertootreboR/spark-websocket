@@ -30,6 +30,7 @@ public class ChannelHandler {
             try {
                 session.getRemote().sendString(String.valueOf(new JSONObject()
                         .put("channellist", getChannelNames())
+                        .put("reason","refresh")
                 ));
             } catch (Exception e) {
                 e.printStackTrace();
