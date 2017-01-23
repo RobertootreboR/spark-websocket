@@ -1,10 +1,14 @@
 import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Created by robert on 22.01.17.
  */
+@Getter
+@Setter
 @AllArgsConstructor
 public class User {
-    String name;
-
+    private String name;
+    private String Channel;
 }
