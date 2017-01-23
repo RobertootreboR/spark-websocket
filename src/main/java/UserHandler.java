@@ -13,11 +13,10 @@ import java.util.concurrent.ConcurrentHashMap;
 public class UserHandler {
     Map<Session, User> userUsernameMap = new ConcurrentHashMap<>();
     static WeatherForecast forecast = new WeatherForecast();
-    UserChannel defaultChannel =new UserChannel("Default");
 
     public void addUser(Session user, String message,List<String> channels) {
         String username = message.substring(message.indexOf('*') + 1);
-        userUsernameMap.put(user, new User(username,defaultChannel));
+        userUsernameMap.put(user, new User(username,new UserChannel("Default")));
         broadcastMessage("Server",(username + " joined the chat"),"message",channels);
     }
 
@@ -65,4 +64,18 @@ public class UserHandler {
         }
     }
 
+    public void joinChannel(Session user, String channel) {
+        userUsernameMap.get(user).getChannel().setChannelName(channel);
+    }
+
+    public void sendToUser(Session user,String message) {
+        try {
+            user.getRemote().sendString(String.valueOf(new JSONObject()
+                    .put("userMessage", Chat.createHtmlMessageFromSender(userUsernameMap.get(user).getName(), "you are in channel:" + userUsernameMap.get(user).getChannel().getChannelName()))
+                    .put("reason", "message")
+            ));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

@@ -35,14 +35,17 @@ public class ChatWebSocketHandler {
         } else if (message.startsWith("#addChannel#*")) {
             if (channelHandler.uniqueChannelName(decode(message))) {
                 channelHandler.addChannel(user, decode(message),userHandler.userUsernameMap);
-                channelHandler.refreshChannelList(userHandler.userUsernameMap);
             } else {
                 userHandler.retryNamingChannel(user,channelHandler.getChannelNames());
-                channelHandler.refreshChannelList(userHandler.userUsernameMap);
             }
 
-        } //else userHandler.processMessage(sender = userHandler.userUsernameMap.get(user).getName(), msg = message,channelHandler.getChannelNames());
-            else userHandler.userUsernameMap.get(user).getChannel().broadcastMessage(sender = userHandler.userUsernameMap.get(user).getName(), msg = message,"message",userHandler.userUsernameMap,channelHandler.getChannelNames());
+        }else if(message.startsWith("#joinChannel#*")) {
+            userHandler.joinChannel(user,decode(message));
+            userHandler.sendToUser(user,"You are currently in "+decode(message)+ " channel");
+            channelHandler.refreshChannelList(userHandler.userUsernameMap);
+        }else userHandler.userUsernameMap.get(user).getChannel().broadcastMessage(sender = userHandler.userUsernameMap.get(user).getName(), msg = message,"message",userHandler.userUsernameMap,channelHandler.getChannelNames());
+        channelHandler.refreshChannelList(userHandler.userUsernameMap);
+
     }
 
     String decode(String message) {
