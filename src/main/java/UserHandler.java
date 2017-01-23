@@ -27,7 +27,7 @@ public class UserHandler {
                 .isPresent();
     }
     public void retryLogin(Session user) {
-        try{ user.getRemote().sendString(String.valueOf(new JSONObject().put("reason", "duplicate_username").put("channellist", ChatWebSocketHandler.channels) ) );
+        try{ user.getRemote().sendString(String.valueOf(new JSONObject().put("reason", "duplicate_username") ) );
         }catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -55,6 +55,13 @@ public class UserHandler {
             broadcastMessage("Server", new SimpleDateFormat("HH:mm:ss").format(new Date()),"message",channels);
         else if (message.equals("What's the day today?"))
             broadcastMessage("Server", new Date().toString().split(" ")[0],"message",channels);
+    }
+    public void retryNamingChannel(Session user,List<String> channels) {
+        try{ user.getRemote().sendString(String.valueOf(new JSONObject().put("reason", "duplicate_channelname")
+                .put("channellist", channels) ) );
+        }catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
 }

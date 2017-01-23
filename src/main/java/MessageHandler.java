@@ -8,7 +8,7 @@ import java.util.Map;
  * Created by robert on 22.01.17.
  */
 public class MessageHandler {
-    
+/*
 
     public boolean uniqueChannelName(String channel) {
         return !ChatWebSocketHandler.channels.stream()
@@ -18,19 +18,12 @@ public class MessageHandler {
     }
 
     public void addChannel(Session user, String channelName, Map<Session,User> userUsernameMap) {
-        String username = userUsernameMap.get(user).getName();
-        Chat.userToChannel.put(username,channelName);
         ChatWebSocketHandler.channels.add(channelName);
+        userUsernameMap.get(user).setChannel(channelName);
     }
 
-    public void getChannelName(Session user) {
-        try{ user.getRemote().sendString(String.valueOf(new JSONObject().put("reason", "duplicate_channelname")
-                                                                        .put("channellist", ChatWebSocketHandler.channels) ) );
-        }catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-    public void refresh(Map<Session,User> userUsernameMap){
+
+    public void refreshChannelList(Map<Session,User> userUsernameMap){
         userUsernameMap.keySet().stream().filter(Session::isOpen).forEach(session -> {
             try {
                 session.getRemote().sendString(String.valueOf(new JSONObject()
@@ -40,5 +33,5 @@ public class MessageHandler {
                 e.printStackTrace();
             }
         });
-    }
+    }*/
 }

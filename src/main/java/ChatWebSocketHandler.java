@@ -2,47 +2,45 @@ import org.eclipse.jetty.websocket.api.*;
 import org.eclipse.jetty.websocket.api.annotations.*;
 
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @WebSocket
 public class ChatWebSocketHandler {
     public MessageHandler handle = new MessageHandler();
-    static List<String> channels = new CopyOnWriteArrayList<String>();
+    //static List<String> channels = new CopyOnWriteArrayList<String>();
+    ChannelHandler channelHandler =new ChannelHandler();
     UserHandler userHandler = new UserHandler();
     private String sender, msg;
 
     @OnWebSocketConnect
     public void onConnect(Session user) throws Exception {
-        if(handle.uniqueChannelName("Default"))
-            channels.add("Default");
-
+        if(channelHandler.uniqueChannelName("Default"))
+            channelHandler.channels.add(new UserChannel("Default"));
     }
 
     @OnWebSocketClose
     public void onClose(Session user, int statusCode, String reason) {
         String username = userHandler.userUsernameMap.get(user).getName();
         userHandler.userUsernameMap.remove(user);
-        userHandler.broadcastMessage(sender = "Server", msg = (username + " left the chat"), "message",channels);
+        userHandler.broadcastMessage(sender = "Server", msg = (username + " left the chat"), "message",channelHandler.getChannelNames());
     }
 
     @OnWebSocketMessage
     public void onMessage(Session user, String message) {
         if (message.startsWith("#username#*")) {
             if (userHandler.uniqueUsername(decode(message)))
-                userHandler.addUser(user, message,channels);
+                userHandler.addUser(user, message,channelHandler.getChannelNames());
             else userHandler.retryLogin(user);
         } else if (message.startsWith("#addChannel#*")) {
-            if (handle.uniqueChannelName(decode(message))) {
-                handle.addChannel(user, decode(message),userHandler.userUsernameMap);
-                handle.refresh(userHandler.userUsernameMap);
+            if (channelHandler.uniqueChannelName(decode(message))) {
+                channelHandler.addChannel(user, decode(message),userHandler.userUsernameMap);
+                channelHandler.refreshChannelList(userHandler.userUsernameMap);
             } else {
-                handle.getChannelName(user);
-                handle.refresh(userHandler.userUsernameMap);
+                userHandler.retryNamingChannel(user,channelHandler.getChannelNames());
+                channelHandler.refreshChannelList(userHandler.userUsernameMap);
             }
 
-        } else userHandler.processMessage(sender = userHandler.userUsernameMap.get(user).getName(), msg = message,channels);
+        } else userHandler.processMessage(sender = userHandler.userUsernameMap.get(user).getName(), msg = message,channelHandler.getChannelNames());
     }
 
     String decode(String message) {
