@@ -21,9 +21,8 @@ public class ChannelHandler {
                 .findFirst()
                 .isPresent();
     }
-    public void addChannel(Session user, String channelName, Map<Session,User> userUsernameMap) {
+    public void addChannel(String channelName) {
         channels.add(new UserChannel(channelName));
-        //userUsernameMap.get(user).getChannel().setChannelName(channelName);
     }
     public void refreshChannelList(Map<Session,User> userUsernameMap){
         userUsernameMap.keySet().stream().filter(Session::isOpen).forEach(session -> {

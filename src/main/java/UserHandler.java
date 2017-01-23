@@ -17,7 +17,6 @@ public class UserHandler {
     public void addUser(Session user, String message,List<String> channels) {
         String username = message.substring(message.indexOf('*') + 1);
         userUsernameMap.put(user, new User(username,new UserChannel("Default")));
-        broadcastMessage("Server",(username + " joined the chat"),"message",channels);
     }
 
     public boolean uniqueUsername(String newUsername) {
@@ -34,7 +33,7 @@ public class UserHandler {
     }
 
     //Sends a message from one user to all users, along with a list of current usernames
-    public  void broadcastMessage(String sender, String message, String reason, List<String> channels) {
+    /*public  void broadcastMessage(String sender, String message, String reason, List<String> channels) {
         userUsernameMap.keySet().stream().filter(Session::isOpen).forEach(session -> {
             try {
                 session.getRemote().sendString(String.valueOf(new JSONObject()
@@ -55,7 +54,7 @@ public class UserHandler {
             broadcastMessage("Server", new SimpleDateFormat("HH:mm:ss").format(new Date()),"message",channels);
         else if (message.equals("What's the day today?"))
             broadcastMessage("Server", new Date().toString().split(" ")[0],"message",channels);
-    }
+    }*/
     public void retryNamingChannel(Session user,List<String> channels) {
         try{ user.getRemote().sendString(String.valueOf(new JSONObject().put("reason", "duplicate_channelname")
                 .put("channellist", channels) ) );
@@ -67,11 +66,10 @@ public class UserHandler {
     public void joinChannel(Session user, String channel) {
         userUsernameMap.get(user).getChannel().setChannelName(channel);
     }
-
-    public void sendToUser(Session user,String message) {
+    public void sendToUser(Session session, User user, String message) {
         try {
-            user.getRemote().sendString(String.valueOf(new JSONObject()
-                    .put("userMessage", Chat.createHtmlMessageFromSender(userUsernameMap.get(user).getName(), "you are in channel:" + userUsernameMap.get(user).getChannel().getChannelName()))
+            session.getRemote().sendString(String.valueOf(new JSONObject()
+                    .put("userMessage", AbstractChannel.createHtmlMessageFromSender(user.getName(), message))
                     .put("reason", "message")
             ));
         } catch (Exception e) {

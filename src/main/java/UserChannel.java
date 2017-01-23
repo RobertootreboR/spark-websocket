@@ -14,11 +14,11 @@ public class UserChannel extends AbstractChannel{
         super(channelName);
     }
 
-    public  void broadcastMessage(String sender, String message, String reason, Map<Session, User> userUsernameMap,List<String> channels) {
-        userUsernameMap.keySet().stream().filter(Session::isOpen).filter(session -> inChannel(userUsernameMap.get(session))).forEach(session -> {
+    public void broadcastMessage(String sender, String message, String reason, Map<Session, User> userUsernameMap,List<String> channels) {
+        userUsernameMap.keySet().stream().filter(Session::isOpen).filter(session -> inCurrentChannel(userUsernameMap.get(session))).forEach(session -> {
             try {
                 session.getRemote().sendString(String.valueOf(new JSONObject()
-                        .put("userMessage", Chat.createHtmlMessageFromSender(sender, message))
+                        .put("userMessage", createHtmlMessageFromSender(sender, message))
                         .put("reason", reason)
                         .put("channellist", channels)
                 ));
@@ -27,7 +27,5 @@ public class UserChannel extends AbstractChannel{
             }
         });
     }
-    private boolean inChannel(User user) {
-        return user.getChannel().getChannelName().equals(this.getChannelName());
-    }
+
 }

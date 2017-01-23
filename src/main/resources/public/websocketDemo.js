@@ -34,6 +34,9 @@ id("send").addEventListener("click", function () {
 id("addChannel").addEventListener("click", function () {
     addChannel();
 });
+id("exitChannel").addEventListener("click", function () {
+    joinChannel("Default");
+});
 function addChannel() {
     var channelName = prompt("How do you want to name your Channel?");
     if (channelName == "" || channelName == null) {

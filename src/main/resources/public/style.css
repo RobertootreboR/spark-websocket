@@ -32,6 +32,13 @@ li {
     overflow: auto;
     margin: 0 0 5px 0
 }
+#addChannel {
+    position: fixed;
+    left: 80%;
+    margin-left: 10px;
+    top: 30px;
+}
+
 
 #channellist {
     position: fixed;

@@ -1,4 +1,3 @@
-import lombok.Getter;
 import org.eclipse.jetty.websocket.api.Session;
 
 import java.util.List;
@@ -11,6 +10,6 @@ import java.util.Map;
 public interface IChannel {
     String getChannelName();
     void setChannelName(String name);
-    public  void broadcastMessage(String sender, String message, String reason, Map<Session, User> userUsernameMap,List<String> channels);
-
+    void broadcastMessage(String sender, String message, String reason, Map<Session, User> userUsernameMap,List<String> channels);
+    boolean inCurrentChannel(User user);
 }
