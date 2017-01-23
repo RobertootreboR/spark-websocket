@@ -11,8 +11,10 @@ public class ChatWebSocketHandler {
 
     @OnWebSocketConnect
     public void onConnect(Session user) throws Exception {
-        if (channelHandler.uniqueChannelName("Default"))
+        if (channelHandler.uniqueChannelName("Default") && channelHandler.uniqueChannelName("ChatBot")){
             channelHandler.channels.add(new UserChannel("Default"));
+            channelHandler.channels.add(new ChatBotChannel("ChatBot"));
+        }
         channelHandler.refreshChannelList(userHandler.userUsernameMap);
     }
 
@@ -20,7 +22,7 @@ public class ChatWebSocketHandler {
     public void onClose(Session user, int statusCode, String reason) {
         String username = userHandler.userUsernameMap.get(user).getName();
         userHandler.userUsernameMap.remove(user);
-        userHandler.userUsernameMap.get(user).getChannel().broadcastMessage("Server", username + " left the chat", "message", userHandler.userUsernameMap, channelHandler.getChannelNames());
+        userHandler.userUsernameMap.get(user).getChannel().processMessage("Server", username + " left the chat", "message", userHandler.userUsernameMap, channelHandler.getChannelNames());
     }
 
     @OnWebSocketMessage
@@ -44,7 +46,7 @@ public class ChatWebSocketHandler {
             userHandler.joinChannel(user, decode(message));
             userHandler.sendToUser(user, userHandler.userUsernameMap.get(user), "You are currently in " + decode(message) + " channel");
         } else
-            userHandler.userUsernameMap.get(user).getChannel().broadcastMessage(userHandler.userUsernameMap.get(user).getName(), message, "message", userHandler.userUsernameMap, channelHandler.getChannelNames());
+            userHandler.userUsernameMap.get(user).getChannel().processMessage(userHandler.userUsernameMap.get(user).getName(), message, "message", userHandler.userUsernameMap, channelHandler.getChannelNames());
         channelHandler.refreshChannelList(userHandler.userUsernameMap);
         userHandler.userUsernameMap.get(user).getChannel().refreshChannelUsersList(userHandler.userUsernameMap);
 

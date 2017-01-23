@@ -14,18 +14,8 @@ public class UserChannel extends AbstractChannel{
         super(channelName);
     }
 
-    public void broadcastMessage(String sender, String message, String reason, Map<Session, User> userUsernameMap,List<String> channels) {
-        userUsernameMap.keySet().stream().filter(Session::isOpen).filter(session -> inCurrentChannel(userUsernameMap.get(session))).forEach(session -> {
-            try {
-                session.getRemote().sendString(String.valueOf(new JSONObject()
-                        .put("userMessage", createHtmlMessageFromSender(sender, message))
-                        .put("reason", reason)
-                        .put("channellist", channels)
-                ));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
+    public void processMessage(String sender, String message, String reason, Map<Session, User> userUsernameMap,List<String> channels){
+        broadcastMessage(sender,message,reason,userUsernameMap,channels);
     }
 
 }

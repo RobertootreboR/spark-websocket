@@ -12,7 +12,6 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class UserHandler {
     Map<Session, User> userUsernameMap = new ConcurrentHashMap<>();
-    static WeatherForecast forecast = new WeatherForecast();
 
     public void addUser(Session user, String message) {
         String username = message.substring(message.indexOf('*') + 1);
@@ -32,29 +31,6 @@ public class UserHandler {
         }
     }
 
-    //Sends a message from one user to all users, along with a list of current usernames
-    /*public  void broadcastMessage(String sender, String message, String reason, List<String> channels) {
-        userUsernameMap.keySet().stream().filter(Session::isOpen).forEach(session -> {
-            try {
-                session.getRemote().sendString(String.valueOf(new JSONObject()
-                        .put("userMessage", Chat.createHtmlMessageFromSender(sender, message))
-                        .put("channellist", channels)
-                        .put("reason", reason)
-                ));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
-    }
-    public void processMessage(String sender, String message,List<String> channels) {
-        broadcastMessage(sender, message,"message",channels);
-        if (message.equals("what's the weather in Krakow?"))
-            broadcastMessage("Server", forecast.update(),"message",channels);
-        else if (message.equals("What's the time?"))
-            broadcastMessage("Server", new SimpleDateFormat("HH:mm:ss").format(new Date()),"message",channels);
-        else if (message.equals("What's the day today?"))
-            broadcastMessage("Server", new Date().toString().split(" ")[0],"message",channels);
-    }*/
     public void retryNamingChannel(Session user,List<String> channels) {
         try{ user.getRemote().sendString(String.valueOf(new JSONObject().put("reason", "duplicate_channelname")
                 .put("channellist", channels) ) );
@@ -64,7 +40,10 @@ public class UserHandler {
     }
 
     public void joinChannel(Session user, String channel) {
-        userUsernameMap.get(user).getChannel().setChannelName(channel);
+        if(channel.equals("ChatBot"))
+            userUsernameMap.get(user).setChannel(new ChatBotChannel(channel));
+        else
+            userUsernameMap.get(user).setChannel(new UserChannel(channel));
     }
     public void sendToUser(Session session, User user, String message) {
         try {

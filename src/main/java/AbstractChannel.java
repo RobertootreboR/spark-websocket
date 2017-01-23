@@ -44,8 +44,24 @@ public abstract class AbstractChannel implements IChannel{
             }
         });
     }
-    List<String> usersInChannel(Map<Session,User> userUsernameMap){
+    private List<String> usersInChannel(Map<Session,User> userUsernameMap){
         return userUsernameMap.values().stream().filter(this::inCurrentChannel).map(User::getName).collect(Collectors.toList());
     }
+
+    public void broadcastMessage(String sender, String message, String reason, Map<Session, User> userUsernameMap,List<String> channels) {
+        userUsernameMap.keySet().stream().filter(Session::isOpen).filter(session -> inCurrentChannel(userUsernameMap.get(session))).forEach(session -> {
+            try {
+                session.getRemote().sendString(String.valueOf(new JSONObject()
+                        .put("userMessage", createHtmlMessageFromSender(sender, message))
+                        .put("reason", reason)
+                        .put("channellist", channels)
+                ));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+
 
 }
