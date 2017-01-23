@@ -6,6 +6,9 @@ import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static j2html.TagCreator.*;
 
@@ -27,6 +30,22 @@ public abstract class AbstractChannel implements IChannel{
                 p(message),
                 span().withClass("timestamp").withText(new SimpleDateFormat("HH:mm:ss").format(new Date()))
         ).render();
+    }
+    public void refreshChannelUsersList(Map<Session,User> userUsernameMap){
+        userUsernameMap.keySet().stream().filter(Session::isOpen).filter(session -> inCurrentChannel(userUsernameMap.get(session)))
+                .forEach(session -> {
+            try {
+                session.getRemote().sendString(String.valueOf(new JSONObject()
+                        .put("reason","userRefresh")
+                        .put("userList",usersInChannel(userUsernameMap))
+                ));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
+    List<String> usersInChannel(Map<Session,User> userUsernameMap){
+        return userUsernameMap.values().stream().filter(this::inCurrentChannel).map(User::getName).collect(Collectors.toList());
     }
 
 }

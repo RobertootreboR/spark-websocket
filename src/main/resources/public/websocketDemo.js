@@ -77,12 +77,19 @@ function updateChat(msg) {
     if (data.reason == "duplicate_channelname") {
         alert("this channelname is taken!");
         addChannel();
-        //return;
+        return;
     }
 
 
     if (data.reason == "message") {
         insert("chat", data.userMessage);
+    }
+    if (data.reason == "userRefresh") {
+        id("userList").innerHTML = "";
+        data.userList.forEach(function (user) {
+            insert("userList", "<li>" + user + "</li>");
+        });
+        return;
     }
         id("channellist").innerHTML = "";
         data.channellist.forEach(function (channel) {

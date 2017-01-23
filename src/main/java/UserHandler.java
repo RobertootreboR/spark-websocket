@@ -14,7 +14,7 @@ public class UserHandler {
     Map<Session, User> userUsernameMap = new ConcurrentHashMap<>();
     static WeatherForecast forecast = new WeatherForecast();
 
-    public void addUser(Session user, String message,List<String> channels) {
+    public void addUser(Session user, String message) {
         String username = message.substring(message.indexOf('*') + 1);
         userUsernameMap.put(user, new User(username,new UserChannel("Default")));
     }

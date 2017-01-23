@@ -50,6 +50,16 @@ li {
     width: 150px;
     top: 11px;
 }
+#userList {
+    position: fixed;
+    left: 1%;
+    list-style: none;
+    margin-left: 250px;
+    background: #1816f9;
+    padding: 5px 10px;
+    width: 190px;
+    top: 11px;
+}
 
 #chat p {
     margin: 5px 0;

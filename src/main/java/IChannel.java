@@ -12,4 +12,5 @@ public interface IChannel {
     void setChannelName(String name);
     void broadcastMessage(String sender, String message, String reason, Map<Session, User> userUsernameMap,List<String> channels);
     boolean inCurrentChannel(User user);
+    void refreshChannelUsersList(Map<Session, User> userUsernameMap);
 }
