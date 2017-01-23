@@ -6,5 +6,6 @@ import lombok.Getter;
 
 public interface IChannel {
     String getChannelName();
+    void setChannelName(String name);
 
 }

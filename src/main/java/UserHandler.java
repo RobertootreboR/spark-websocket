@@ -13,10 +13,11 @@ import java.util.concurrent.ConcurrentHashMap;
 public class UserHandler {
     Map<Session, User> userUsernameMap = new ConcurrentHashMap<>();
     static WeatherForecast forecast = new WeatherForecast();
+    UserChannel defaultChannel =new UserChannel("Default");
 
     public void addUser(Session user, String message,List<String> channels) {
         String username = message.substring(message.indexOf('*') + 1);
-        userUsernameMap.put(user, new User(username,"Default"));
+        userUsernameMap.put(user, new User(username,defaultChannel));
         broadcastMessage("Server",(username + " joined the chat"),"message",channels);
     }
 

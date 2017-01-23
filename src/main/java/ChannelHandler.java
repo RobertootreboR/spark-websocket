@@ -13,9 +13,6 @@ import java.util.stream.Collectors;
 //@NoArgsConstructor
 public class ChannelHandler {
      List<IChannel> channels=new CopyOnWriteArrayList<>();
-    public void init(){
-        channels.add(new UserChannel("Default"));
-    }
 
     public boolean uniqueChannelName(String channelName) {
         return !getChannelNames().stream()
@@ -26,7 +23,7 @@ public class ChannelHandler {
     }
     public void addChannel(Session user, String channelName, Map<Session,User> userUsernameMap) {
         channels.add(new UserChannel(channelName));
-        userUsernameMap.get(user).setChannel(channelName);//zmienic na ichannel!!!!!!!!!!!!!!!!!!!
+        //userUsernameMap.get(user).getChannel().setChannelName(channelName);
     }
     public void refreshChannelList(Map<Session,User> userUsernameMap){
         userUsernameMap.keySet().stream().filter(Session::isOpen).forEach(session -> {

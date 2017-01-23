@@ -10,5 +10,5 @@ import lombok.Setter;
 @AllArgsConstructor
 public class User {
     private String name;
-    private String Channel;
+    private IChannel Channel;
 }
