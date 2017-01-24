@@ -30,12 +30,14 @@ public class ChannelHandler {
         else return channelName;
     }
 
-    public void addChannel(String channelName) {
+    public boolean addChannel(String channelName) {
         if(channelName.startsWith("Protected")){
+            if(!channelName.contains(",")) return false;
             String[] tmp = channelName.split(",");
             channels.add(new ProtectedUserChannel(tmp[0],tmp[1]));
         }
         else channels.add(new UserChannel(channelName));
+        return true;
     }
     public void refreshChannelList(Map<Session,User> userUsernameMap){
         userUsernameMap.keySet().stream().filter(Session::isOpen).forEach(session -> {

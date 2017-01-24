@@ -1,6 +1,7 @@
 import org.eclipse.jetty.websocket.api.Session;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -25,15 +26,15 @@ public class UserHandler {
                 .isPresent();
     }
     public void retryLogin(Session user) {
-        try{ user.getRemote().sendString(String.valueOf(new JSONObject().put("reason", "duplicate_username") ) );
+        try{ send(user,new JSONObject().put("reason", "duplicate_username"));
         }catch (Exception ex) {
             ex.printStackTrace();
         }
     }
 
     public void retryNamingChannel(Session user,List<String> channels) {
-        try{ user.getRemote().sendString(String.valueOf(new JSONObject().put("reason", "duplicate_channelname")
-                .put("channellist", channels) ) );
+        try{ send(user,new JSONObject().put("reason", "duplicate_channelname")
+                .put("channellist", channels) );
         }catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -43,9 +44,9 @@ public class UserHandler {
         if(channel.equals("ChatBot"))
             userUsernameMap.get(user).setChannel(new ChatBotChannel(channel));
         else if(channel.startsWith("Protected")){
-            try{ user.getRemote().sendString(String.valueOf(new JSONObject()
+            try{ send(user,new JSONObject()
                     .put("reason", "authenticate")
-                    .put("channel",channel)) );
+                    .put("channel",channel));
             }catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -55,12 +56,15 @@ public class UserHandler {
     }
     public void sendToUser(Session session, User user, String message) {
         try {
-            session.getRemote().sendString(String.valueOf(new JSONObject()
+            send(session,new JSONObject()
                     .put("userMessage", AbstractChannel.createHtmlMessageFromSender(user.getName(), message))
                     .put("reason", "message")
-            ));
+            );
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    public void send(Session session,JSONObject jsonObject) throws IOException{
+        session.getRemote().sendString(String.valueOf(jsonObject));
     }
 }

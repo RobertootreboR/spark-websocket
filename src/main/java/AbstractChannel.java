@@ -2,6 +2,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.eclipse.jetty.websocket.api.Session;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
@@ -32,34 +33,27 @@ public abstract class AbstractChannel implements IChannel{
         ).render();
     }
     public void refreshChannelUsersList(Map<Session,User> userUsernameMap){
-        userUsernameMap.keySet().stream().filter(Session::isOpen).filter(session -> inCurrentChannel(userUsernameMap.get(session)))
-                .forEach(session -> {
             try {
-                session.getRemote().sendString(String.valueOf(new JSONObject()
-                        .put("reason","userRefresh")
-                        .put("userList",usersInChannel(userUsernameMap))
-                ));
-            } catch (Exception e) {
-                e.printStackTrace();
+                broadcast(userUsernameMap,new JSONObject()
+                                        .put("reason","userRefresh")
+                                        .put("userList",usersInChannel(userUsernameMap)));
+            } catch (JSONException ex) {
+                ex.printStackTrace();
             }
-        });
     }
     private List<String> usersInChannel(Map<Session,User> userUsernameMap){
         return userUsernameMap.values().stream().filter(this::inCurrentChannel).map(User::getName).collect(Collectors.toList());
     }
 
     public void broadcastMessage(String sender, String message, String reason, Map<Session, User> userUsernameMap,List<String> channels) {
-        userUsernameMap.keySet().stream().filter(Session::isOpen).filter(session -> inCurrentChannel(userUsernameMap.get(session))).forEach(session -> {
-            try {
-                session.getRemote().sendString(String.valueOf(new JSONObject()
-                        .put("userMessage", createHtmlMessageFromSender(sender, message))
-                        .put("reason", reason)
-                        .put("channellist", channels)
-                ));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
+        try {
+            broadcast(userUsernameMap, new JSONObject()
+                    .put("userMessage", createHtmlMessageFromSender(sender, message))
+                    .put("reason", reason)
+                    .put("channellist", channels));
+        }catch(JSONException ex){
+            ex.printStackTrace();
+        }
     }
     public void broadcast( Map<Session, User> userUsernameMap, JSONObject jsonObject) {
         userUsernameMap.keySet().stream().filter(Session::isOpen).filter(session -> inCurrentChannel(userUsernameMap.get(session))).forEach(session -> {

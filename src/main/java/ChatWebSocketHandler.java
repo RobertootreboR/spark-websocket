@@ -36,12 +36,13 @@ public class ChatWebSocketHandler {
             }
         } else if (message.startsWith("#addChannel#*")) {
             if (channelHandler.uniqueChannelName(decode(message))) {
-                channelHandler.addChannel(decode(message));
+                if(!channelHandler.addChannel(decode(message))) // retry, if failed to addChannel
+                    userHandler.retryNamingChannel(user, channelHandler.getChannelNames());
+
             } else {
                 userHandler.retryNamingChannel(user, channelHandler.getChannelNames());
                 return;
             }
-
         } else if (message.startsWith("#joinChannel#*")) {
             if(userHandler.joinChannel(user, decode(message)))
                 userHandler.sendToUser(user, userHandler.userUsernameMap.get(user), "You are currently in " + decode(message) + " channel");

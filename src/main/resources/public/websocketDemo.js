@@ -97,7 +97,7 @@ function updateChat(msg) {
         return;
     }
     if (data.reason == "duplicate_channelname") {
-        alert("this channelname is taken!");
+        alert("this channelname is taken or forbidden!");
         addChannel();
         return;
     }
