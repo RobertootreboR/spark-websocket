@@ -101,6 +101,11 @@ function updateChat(msg) {
         addChannel();
         return;
     }
+    if (data.reason == "duplicate_Protectedchannelname") {
+        alert("this channelname is taken or forbidden!");
+        addProtectedChannel();
+        return;
+    }
     if(data.reason == "authenticate"){
         authenticate(data.channel);
     }

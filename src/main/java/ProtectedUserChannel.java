@@ -10,12 +10,14 @@ import java.util.Map;
 @Getter
 public class ProtectedUserChannel extends AbstractChannel {
     String password;
-    ProtectedUserChannel(String username,String password){
+
+    ProtectedUserChannel(String username, String password) {
         super(username);
-        this.password=password;
+        this.password = password;
     }
-    public void processMessage(String sender, String message, String reason, Map<Session, User> userUsernameMap, List<String> channels, Session session){
-        broadcastMessage(sender,message,reason,userUsernameMap,channels);
+
+    public void processMessage(String sender, String message, String reason, Map<Session, User> userUsernameMap, List<String> channels, Session session) {
+        broadcastMessage(sender, message, reason, userUsernameMap, channels);
     }
 
 }

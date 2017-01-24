@@ -19,7 +19,8 @@ import java.util.Optional;
 public class WeatherForecast {
     public static final String errorMessage = "Problems occured while downloading weather. Try again in about 10 minutes.";
     String weather;
-    Optional<Instant> lastRequest= Optional.empty();
+    Optional<Instant> lastRequest = Optional.empty();
+
     static String getJSON(String url) throws IOException {
         Request request = new Request.Builder()
                 .url(url)
@@ -28,12 +29,13 @@ public class WeatherForecast {
         Response response = new OkHttpClient().newCall(request).execute();
         return response.body().string();
     }
-    public String update(){
-        if(Duration.between(lastRequest.orElseGet(() ->Instant.now().minusSeconds(3700)),Instant.now()).toMinutes()>=60
-                || weather.equals(errorMessage)){
+
+    public String update() {
+        if (Duration.between(lastRequest.orElseGet(() -> Instant.now().minusSeconds(3700)), Instant.now()).toMinutes() >= 60
+                || weather.equals(errorMessage)) {
             weather = getWeather();
         }
-        lastRequest=Optional.of(Instant.now());
+        lastRequest = Optional.of(Instant.now());
         return weather;
     }
 
@@ -47,12 +49,12 @@ public class WeatherForecast {
     }
 
     private String getClouds(JSONObject krkWeather) throws JSONException {
-        return "clouds: " + krkWeather.getJSONArray("list").getJSONObject(0).getJSONObject("clouds").get("all") +"% of sky";
+        return "clouds: " + krkWeather.getJSONArray("list").getJSONObject(0).getJSONObject("clouds").get("all") + "% of sky";
     }
 
     private String getBasicInfo(JSONObject krkWeather) throws JSONException {
         JSONObject basics = krkWeather.getJSONArray("list").getJSONObject(0).getJSONObject("main");
-        return "temperature: "+ basics.get("temp") + "K , humidity: " + basics.get("humidity") + "%, pressure: "+ basics.get("pressure") + "hPa,";
+        return "temperature: " + basics.get("temp") + "K , humidity: " + basics.get("humidity") + "%, pressure: " + basics.get("pressure") + "hPa,";
 
     }
 

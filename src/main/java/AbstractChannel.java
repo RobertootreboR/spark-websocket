@@ -13,18 +13,16 @@ import java.util.stream.Collectors;
 
 import static j2html.TagCreator.*;
 
-/**
- * Created by robert on 23.01.17.
- */
 @Getter
 @Setter
 @AllArgsConstructor
-public abstract class AbstractChannel implements IChannel{
+public abstract class AbstractChannel implements IChannel {
     String ChannelName;
+
     public boolean inCurrentChannel(User user) {
         return user.getChannel().getChannelName().equals(this.getChannelName());
     }
-    //Builds a HTML element with a sender-name, a message, and a timestamp,
+
     static String createHtmlMessageFromSender(String sender, String message) {
         return article().with(
                 b(sender + " says:"),
@@ -32,30 +30,33 @@ public abstract class AbstractChannel implements IChannel{
                 span().withClass("timestamp").withText(new SimpleDateFormat("HH:mm:ss").format(new Date()))
         ).render();
     }
-    public void refreshChannelUsersList(Map<Session,User> userUsernameMap){
-            try {
-                broadcast(userUsernameMap,new JSONObject()
-                                        .put("reason","userRefresh")
-                                        .put("userList",usersInChannel(userUsernameMap)));
-            } catch (JSONException ex) {
-                ex.printStackTrace();
-            }
+
+    public void refreshChannelUsersList(Map<Session, User> userUsernameMap) {
+        try {
+            broadcast(userUsernameMap, new JSONObject()
+                    .put("reason", "userRefresh")
+                    .put("userList", usersInChannel(userUsernameMap)));
+        } catch (JSONException ex) {
+            ex.printStackTrace();
+        }
     }
-    private List<String> usersInChannel(Map<Session,User> userUsernameMap){
+
+    private List<String> usersInChannel(Map<Session, User> userUsernameMap) {
         return userUsernameMap.values().stream().filter(this::inCurrentChannel).map(User::getName).collect(Collectors.toList());
     }
 
-    public void broadcastMessage(String sender, String message, String reason, Map<Session, User> userUsernameMap,List<String> channels) {
+    public void broadcastMessage(String sender, String message, String reason, Map<Session, User> userUsernameMap, List<String> channels) {
         try {
             broadcast(userUsernameMap, new JSONObject()
                     .put("userMessage", createHtmlMessageFromSender(sender, message))
                     .put("reason", reason)
                     .put("channellist", channels));
-        }catch(JSONException ex){
+        } catch (JSONException ex) {
             ex.printStackTrace();
         }
     }
-    public void broadcast( Map<Session, User> userUsernameMap, JSONObject jsonObject) {
+
+    public void broadcast(Map<Session, User> userUsernameMap, JSONObject jsonObject) {
         userUsernameMap.keySet().stream().filter(Session::isOpen).filter(session -> inCurrentChannel(userUsernameMap.get(session))).forEach(session -> {
             try {
                 session.getRemote().sendString(String.valueOf(jsonObject));
@@ -64,8 +65,6 @@ public abstract class AbstractChannel implements IChannel{
             }
         });
     }
-
-
 
 
 }
