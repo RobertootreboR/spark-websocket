@@ -15,7 +15,7 @@ public class ChatBotChannel extends AbstractChannel {
         super(channelName);
     }
 
-    public void processMessage(String sender, String message, String reason, Map<Session, User> userUsernameMap,List<String> channels){
+    public void processMessage(String sender, String message, String reason, Map<Session, User> userUsernameMap,List<String> channels,Session session){
         broadcastMessage(sender, message,"message",userUsernameMap,channels);
         if (message.equals("What's the weather in Krakow?"))
             broadcastMessage("Server", forecast.update(),"message",userUsernameMap,channels);
@@ -29,8 +29,23 @@ public class ChatBotChannel extends AbstractChannel {
                                         "\'What's the time?\' \n" +
                                         "\'What's the day today?\' \n"
                                      ,"message",userUsernameMap,channels);
+        else if(message.equals("cookie")){
+            broadcastMessage("Server", getCookies(session),"message",userUsernameMap,channels);
+
+        }
         else if(! message.endsWith("?"))
             broadcastMessage("Server", "That's not even a question!","message",userUsernameMap,channels);
          else broadcastMessage("Server", "I don't know the answer. Write 'HELP!' to see possible options","message",userUsernameMap,channels);
+    }
+
+    private String getCookies(Session session) {
+        StringBuilder result =new StringBuilder();
+        session.getUpgradeRequest().getCookies().forEach(e -> result.append(e.getName() + "=" + e.getValue() + '\n'));
+        return result.toString();
+    }
+
+    @Override
+    public String getPassword() {
+        return "";
     }
 }

@@ -34,17 +34,30 @@ id("send").addEventListener("click", function () {
 id("addChannel").addEventListener("click", function () {
     addChannel();
 });
+id("addProtectedChannel").addEventListener("click", function () {
+    addProtectedChannel();
+});
 id("exitChannel").addEventListener("click", function () {
     joinChannel("Default");
 });
 function addChannel() {
     var channelName = prompt("How do you want to name your Channel?");
-    if (channelName == "" || channelName == null) {
+    if (channelName == "" || channelName == null ) {
         alert("You have to name your channel!");
         addChannel();
         return;
-    }
+    }//if startswith protected to nieeee
     webSocket.send("#addChannel#*" + channelName);
+}
+function addProtectedChannel() {
+    var channelName = prompt("How do you want to name your Channel?");
+    var channelPasword =prompt("set password");
+    if (channelName == "" || channelName == null || channelPasword == "" || channelPasword == null) {
+        alert("You have to name your channel and give pasword!");
+        addProtectedChannel();
+        return;
+    }
+    webSocket.send("#addChannel#*" + "Protected"+channelName +","+channelPasword);
 }
 
 //Send message if enter is pressed in the input field
@@ -62,7 +75,16 @@ function sendMessage(message) {
     }
 }
 function joinChannel(channel){
-    webSocket.send("#joinChannel#*"+channel)
+       webSocket.send("#joinChannel#*"+channel)
+}
+function authenticate(channel){
+    var password = prompt("give me password");
+    if (password == "" || password == null ) {
+        alert("You have to pass password");
+        authenticate(channel);
+        return;
+    }
+    webSocket.send("#authenticate#*"+channel+","+password)
 }
 
 //Update the chat-panel, and the list of connected users
@@ -78,6 +100,9 @@ function updateChat(msg) {
         alert("this channelname is taken!");
         addChannel();
         return;
+    }
+    if(data.reason == "authenticate"){
+        authenticate(data.channel);
     }
 
 

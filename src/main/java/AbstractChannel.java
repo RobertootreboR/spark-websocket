@@ -61,6 +61,16 @@ public abstract class AbstractChannel implements IChannel{
             }
         });
     }
+    public void broadcast( Map<Session, User> userUsernameMap, JSONObject jsonObject) {
+        userUsernameMap.keySet().stream().filter(Session::isOpen).filter(session -> inCurrentChannel(userUsernameMap.get(session))).forEach(session -> {
+            try {
+                session.getRemote().sendString(String.valueOf(jsonObject));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
 
 
 

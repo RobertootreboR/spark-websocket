@@ -39,11 +39,19 @@ public class UserHandler {
         }
     }
 
-    public void joinChannel(Session user, String channel) {
+    public boolean joinChannel(Session user, String channel) {
         if(channel.equals("ChatBot"))
             userUsernameMap.get(user).setChannel(new ChatBotChannel(channel));
-        else
-            userUsernameMap.get(user).setChannel(new UserChannel(channel));
+        else if(channel.startsWith("Protected")){
+            try{ user.getRemote().sendString(String.valueOf(new JSONObject()
+                    .put("reason", "authenticate")
+                    .put("channel",channel)) );
+            }catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            return false;
+        } else userUsernameMap.get(user).setChannel(new UserChannel(channel));
+        return true;
     }
     public void sendToUser(Session session, User user, String message) {
         try {

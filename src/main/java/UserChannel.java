@@ -14,8 +14,12 @@ public class UserChannel extends AbstractChannel{
         super(channelName);
     }
 
-    public void processMessage(String sender, String message, String reason, Map<Session, User> userUsernameMap,List<String> channels){
+    public void processMessage(String sender, String message, String reason, Map<Session, User> userUsernameMap,List<String> channels,Session session){
         broadcastMessage(sender,message,reason,userUsernameMap,channels);
     }
 
+    @Override
+    public String getPassword() {
+        return "";
+    }
 }

@@ -38,6 +38,12 @@ li {
     margin-left: 10px;
     top: 30px;
 }
+#addProtectedChannel{
+    position: fixed;
+    left: 80%;
+    margin-left: 10px;
+    top: 54px;
+}
 
 
 #channellist {
