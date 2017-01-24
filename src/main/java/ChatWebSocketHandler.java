@@ -47,7 +47,7 @@ public class ChatWebSocketHandler {
                 userHandler.sendToUser(user, userHandler.userUsernameMap.get(user), "You are currently in " + decode(message) + " channel");
         } else if(message.startsWith("#authenticate#*")){
             if(channelHandler.authenticate(decode(message),user,userHandler.userUsernameMap))
-                userHandler.sendToUser(user, userHandler.userUsernameMap.get(user), "You are currently in " + decode(message) + " channel");
+                userHandler.sendToUser(user, userHandler.userUsernameMap.get(user), "You are currently in " + decode(message).split(",")[0] + " channel");
         }else userHandler.userUsernameMap.get(user).getChannel().processMessage(userHandler.userUsernameMap.get(user).getName(), message, "message", userHandler.userUsernameMap, channelHandler.getChannelNames(),user);
         channelHandler.refreshChannelList(userHandler.userUsernameMap);
         userHandler.userUsernameMap.get(user).getChannel().refreshChannelUsersList(userHandler.userUsernameMap);
